@@ -1,11 +1,14 @@
 import cv2
 import matplotlib.pyplot as plt
+import numpy as np
 
 # TODO Rename pour une seule langue -> En ou FR
 
 class ContoursDetector:
     def __init__(self):
         pass
+
+    contour_type = ["cercle", "box"] # TODO : à utiliser pour se focus sur un type de contour
 
     # TODO : Méthode pour prétraiter les images
     def pretraiter_image(self, image):
@@ -14,11 +17,11 @@ class ContoursDetector:
         # TODO : Ajouter d'autre prétraitement pour détecter les contours au besoin
 
         # Appliquer un flou gaussien pour réduire le bruit
-        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+        blurred = cv2.GaussianBlur(gray, (11, 11), 0)
         return blurred
 
-    # TODO : Créer une méthode qui sera par la suite appelée dans main
     # Méthode pour faire la détection des contours
+    # TODO : Ajouter en paramètre le type de contour qu'on veut détecter
     def detect_contours(self, image):
         # Prétraitement
         image_pretraitee = self.pretraiter_image(image)
@@ -26,14 +29,43 @@ class ContoursDetector:
         # Détection des contours avec Canny
         edges = cv2.Canny(image_pretraitee, threshold1=50, threshold2=150)
 
+        contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        filtered_contours = [cnt for cnt in contours if cv2.contourArea(cnt) > 500]  # Seuil d'aire à ajuster
+        edges_filtered = np.zeros_like(edges)
+        cv2.drawContours(edges_filtered, filtered_contours, -1, 255, thickness=cv2.FILLED)
+
+        # Image vide pour dessiner les contours des cercles uniquement
+        edges_filtered = np.zeros_like(edges)
         # Créer une image vide pour dessiner les contours
         contours_image = cv2.cvtColor(edges, cv2.COLOR_GRAY2BGR)
+
+        # TODO : Trier les contours pour ne détecter que les cercles
+        # Utilisation de HoughCircles pour détecter que les cercle
+        circles = cv2.HoughCircles(
+            image_pretraitee,
+            cv2.HOUGH_GRADIENT,
+            dp=1.2,
+            minDist=120,
+            param1=50,
+            param2=60,
+            minRadius=20,
+            maxRadius=150
+        )
+
+        # Si des cercles sont détectés, les dessiner
+        if circles is not None:
+            circles = np.uint16(np.around(circles))
+            for circle in circles[0, :]:
+                # Dessiner uniquement les cercles sur l'image filtrée
+                cv2.circle(edges_filtered, (circle[0], circle[1]), circle[2], 255, 2)  # Contour blanc sur fond noir
+                cv2.circle(contours_image, (circle[0], circle[1]), circle[2], (0, 255, 0), 2)  # Contour du cercle
+                cv2.circle(contours_image, (circle[0], circle[1]), 2, (0, 0, 255), 3)  # Centre du cercle
 
         return edges, contours_image
 
 
 
-    # Méthode pour récupérer l'image
+    # Méthode pour récupérer l'image si elle existe
     def get_image(self, chemin_image):
         try:
             image = cv2.imread(chemin_image)
@@ -58,9 +90,13 @@ class ContoursDetector:
         plt.show()
 
     # Méthode pour ajouter un carré autour du cercle détecter
+    # TODO : Mieux détecter les cercles pour les encadrer avec le box
     def bounding_box(self, image):
         # Obtenir les contours et l'image avec contours
         edges, image_contours = self.detect_contours(image)
+
+        # TODO : Ajouter une liste pour stocker les différentes carré détecté
+        box_list =[]
 
         max_radius = 0  # Stocker le plus grand rayon
         max_circle = None  # Stocker les informations du plus grand cercle
@@ -92,7 +128,9 @@ class ContoursDetector:
 
         return image, image_contours
 
-
+    # TODO : Méthode pour aligner le centre au caré détecter
+    def center_bucket(self, image):
+        pass
 
 
 
@@ -104,3 +142,10 @@ class ContoursDetector:
 # TODO : Créer un nouveau répertoire avec les images avec les contours détecter
 
 # TODO : Ajouter les images avec les contours dans le répertoire
+
+# --------------------------------------
+# TODO : Étape 1 : Ajouter la possibilité d'analyser une vidéo
+# TODO : Étape 2 : Ajouter la possibilité de le faire en temps réel
+
+
+# TODO : Ajouter une méthode pour centrer le carré du milieu à celui autour de l'ouverture du bucket
