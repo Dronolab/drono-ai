@@ -128,6 +128,36 @@ class ContoursDetector:
 
         return image, image_contours
 
+    # Fonction principale pour la webcam
+    def webcam_detection(self):
+        detector = ContoursDetector()
+        cap = cv2.VideoCapture(0)  # 0 pour la webcam par défaut
+
+        if not cap.isOpened():
+            print("Erreur : Impossible d'accéder à la webcam.")
+            return
+
+        print("Appuyez sur 'q' pour quitter.")
+
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                print("Erreur : Impossible de lire la frame depuis la webcam.")
+                break
+
+            # Détecter les contours sur la frame
+            edges, contours_image = detector.detect_contours(frame)  # On récupère les deux images
+
+            # Afficher la frame avec les cercles détectés
+            cv2.imshow("Contours détectés", contours_image)  # Afficher contours_image, pas un tuple
+
+            # Quitter la boucle avec la touche 'q'
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        cap.release()
+        cv2.destroyAllWindows()
+
     # TODO : Méthode pour aligner le centre au caré détecter
     def center_bucket(self, image):
         pass
