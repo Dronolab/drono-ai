@@ -17,7 +17,7 @@ class ContoursDetector:
         # TODO : Ajouter d'autre prétraitement pour détecter les contours au besoin
 
         # Appliquer un flou gaussien pour réduire le bruit
-        blurred = cv2.GaussianBlur(gray, (11, 11), 0)
+        blurred = cv2.GaussianBlur(gray, (15, 15), 0)
         return blurred
 
     # Méthode pour faire la détection des contours
@@ -45,7 +45,7 @@ class ContoursDetector:
             image_pretraitee,
             cv2.HOUGH_GRADIENT,
             dp=1.2,
-            minDist=120,
+            minDist=150,
             param1=50,
             param2=60,
             minRadius=20,
@@ -149,3 +149,5 @@ class ContoursDetector:
 
 
 # TODO : Ajouter une méthode pour centrer le carré du milieu à celui autour de l'ouverture du bucket
+
+# TODO : Faire en sorte que ça fonctionne avec la webcam
