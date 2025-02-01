@@ -60,8 +60,10 @@ class ContoursDetector:
                 cv2.circle(edges_filtered, (circle[0], circle[1]), circle[2], 255, 2)  # Contour blanc sur fond noir
                 cv2.circle(contours_image, (circle[0], circle[1]), circle[2], (0, 255, 0), 2)  # Contour du cercle
                 cv2.circle(contours_image, (circle[0], circle[1]), 2, (0, 0, 255), 3)  # Centre du cercle
+        else :
+            circles = []
 
-        return edges, contours_image
+        return edges_filtered, contours_image, circles
 
 
 
@@ -93,38 +95,32 @@ class ContoursDetector:
     # TODO : Mieux détecter les cercles pour les encadrer avec le box
     def bounding_box(self, image):
         # Obtenir les contours et l'image avec contours
-        edges, image_contours = self.detect_contours(image)
+        edges, image_contours, circles = self.detect_contours(image)
 
         # TODO : Ajouter une liste pour stocker les différentes carré détecté
         box_list =[]
 
-        max_radius = 0  # Stocker le plus grand rayon
-        max_circle = None  # Stocker les informations du plus grand cercle
+        # TODO : Ajouter les bounding box autour des cercles détectées
+        # Si des cercles sont détectés
+        if circles is not None:
+            circles = np.uint16(np.around(circles))
 
-        # Parcourir chaque pixel pour détecter les zones de contours
-        # Cela suppose que vous avez une image binaire avec des pixels blancs pour les contours
-        contours = cv2.connectedComponentsWithStats(edges, connectivity=8)[2]
+            # Dessiner une boîte autour de chaque cercle détecté
+            for circle in circles[0, :]:
+                # Coordonnées du cercle
+                x, y, radius = circle
 
-        for stats in contours:
-            x, y, w, h, area = stats  # Coordonnées du rectangle englobant, largeur, hauteur et aire
-            radius = min(w, h) / 2  # Approximer un rayon basé sur la taille du rectangle englobant
+                # Dessiner le carré autour du cercle
+                top_left = (x - radius, y - radius)  # Coin supérieur gauche
+                bottom_right = (x + radius, y + radius)  # Coin inférieur droit
+                cv2.rectangle(image, top_left, bottom_right, (0, 255, 0),
+                              2)  # Dessiner la boîte en vert avec une épaisseur de 2
 
-            # Vérifier si c'est le cercle le plus grand détecté
-            if radius > max_radius:
-                max_radius = radius
-                max_circle = (x + w // 2, y + h // 2, radius)  # Centre et rayon estimés
+                # Optionnel : dessiner le cercle aussi (pour visualiser les cercles)
+                cv2.circle(image, (x, y), radius, (0, 255, 0), 2)  # Contour du cercle
+                cv2.circle(image, (x, y), 2, (0, 0, 255), 3)  # Centre du cercle
 
-        # Dessiner le rectangle englobant autour du plus grand cercle
-        if max_circle:
-            x, y, radius = max_circle
-            x, y, radius = int(x), int(y), int(radius)
-            cv2.rectangle(
-                image,
-                (x - radius, y - radius),  # Coin supérieur gauche
-                (x + radius, y + radius),  # Coin inférieur droit
-                (255, 0, 0),  # Couleur : bleu
-                2,  # Épaisseur
-            )
+        return image, image_contours
 
         return image, image_contours
 
