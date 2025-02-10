@@ -12,7 +12,7 @@ class SocketServer {
         SocketServer();
         ~SocketServer();
 
-        bool connect(int port);
+        bool connect(int port, const char* ip);
         bool disconnect();
         void send(const char * request, int len);
         void read(char * buffer, int len);

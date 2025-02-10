@@ -9,7 +9,7 @@ VisionModel::~VisionModel() {};
 std::vector<VisionModel::BoundingBox> VisionModel::getBoundingBoxes() {
     std::vector<VisionModel::BoundingBox> boundingBoxes;
     
-    bool connected = _pythonServer->connect(_serverPort);
+    bool connected = _pythonServer->connect(_serverPort, "127.0.0.1");
 
     if(connected) {
         // Send request for bounding boxes

@@ -8,9 +8,7 @@ SocketServer::~SocketServer() {
 
 }
 
-bool SocketServer::connect(const int port) { 
-
-    const char* SERVER_IP = "localhost";
+bool SocketServer::connect(const int port, const char* ip) { 
 
     // Create socket
     _sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -22,7 +20,7 @@ bool SocketServer::connect(const int port) {
     
     _serverAddr.sin_family = AF_INET;
     _serverAddr.sin_port = htons(port);
-    inet_pton(AF_INET, SERVER_IP, &_serverAddr.sin_addr);
+    inet_pton(AF_INET, ip, &_serverAddr.sin_addr);
 
     // Connect to server
     if (::connect(_sock, (struct sockaddr*)&_serverAddr, sizeof(_serverAddr)) < 0) {
