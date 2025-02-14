@@ -20,5 +20,5 @@ Le terrain de vol comprend :
 
 Nous avons la possibilité d'utiliser plus d'un drone pour les deux tâches. Cependant, cela nécessiterait le double des composantes, deux pilotes, ainsi que deux opérateurs pour la station au sol. Compte tenu des ressources disponibles, cela pourrait ne pas être réaliste pour cette année.
 
-![Task 1](task_1.png)
+![Task 1](task_1.jpg)
 📌 **Note** : Toute aide pour améliorer ce document est la bienvenue ! N’hésitez pas à contribuer.  
