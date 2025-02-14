@@ -13,7 +13,7 @@ Le terrain de vol comprend :
 - **Soft Boundary** ⚠️ : Sortir de cette zone entraîne un avertissement et une demande de retour dans l’aire de vol.  
 - **Hard Boundary** ❌ : Dépasser cette limite oblige à arrêter immédiatement le drone.  
 - 📍 **Carte du terrain de vol** :  
-  ![Carte du terrain de vol](https://maps.googleapis.com/maps/api/staticmap?center=50.10150097543756,-110.73828215&zoom=15&size=600x300&maptype=satellite)  
+  ![Carte du terrain de vol](images/map.png) 
   👉 [Voir sur Google Maps](https://www.google.com/maps/d/viewer?mid=1pX1Q-1K0rUGIESKGk_kLibJQnlJ0Vmk&ll=50.10150097543756%2C-110.73828215&z=15)  
 
 📌 **Note** : Toute aide pour améliorer ce document est la bienvenue ! N’hésitez pas à contribuer.  
