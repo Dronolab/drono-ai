@@ -2,7 +2,7 @@ import cv2
 from hotboxDetection import get_img_hotspots
 
 def run_detector():
-    cap = cv2.VideoCapture("hotbox_video.mp4")
+    cap = cv2.VideoCapture("hotbox_video.mp4") #replace with your video path
     if not cap.isOpened():
         print("Error: Could not open camera.")
         exit()
