@@ -1,0 +1,13 @@
+# Core dependencies
+ultralytics==8.3.36
+opencv-python==4.9.0.80
+numpy==1.26.4
+
+# TensorRT dependencies (if using TensorRT)
+# Note: TensorRT itself must be installed separately via NVIDIA
+tensorrt==8.6.2
+torch==2.2.0a0+6a974be
+torchvision==0.17.0
+
+# Built-in libraries (no need to install separately)
+# socket, threading, argparse

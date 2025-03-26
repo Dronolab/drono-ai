@@ -1,0 +1,27 @@
+start by running this command 
+
+we have two options 
+
+using a test image 
+python ultralytics_server.py --engine ~/drono/drono-ai/models/best1.engine --port 12345 --image test1.jpg
+
+using our camera
+python ultralytics_server_camera.py --engine ~/drono/drono-ai/models/best1.engine --port 12345 --camera 0
+
+
+make sure that you have those file in your directory 
+main.cpp
+SocketServer.cpp
+SocketServer.h
+test1.jpg
+VisionModel.h
+VisionModel.cpp
+and ultralytics_server_camera.py or ultralytics_server.py
+
+
+next command this one 
+# Compile your C++ code
+g++ -o balloon_detector main.cpp VisionModel.cpp SocketServer.cpp
+
+# Run it
+./balloon_detector
