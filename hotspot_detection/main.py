@@ -14,7 +14,7 @@ def run_detector():
             break
 
         # Process the frame for hotspot detection
-        processed_frame = get_img_hotspots(240, frame, False)
+        processed_frame = get_img_hotspots(200, frame, False)
 
         count = count + 1
         # Exit when 'q' is pressed
