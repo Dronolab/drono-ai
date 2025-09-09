@@ -1,7 +1,29 @@
+from glob import glob
 from ultralytics import YOLO
 import cv2
 
-def predict_source(source, model_path="models/yolo11n.pt", conf=0.5, show=True):
+from train import train_script
+
+def predict_model_selector():
+    while(True):
+        choice = input("Enter choice 1 for default or 2 for trained: ").strip()
+        if choice == "1":
+            return "models/yolov11n.pt"  # Default model
+    
+        elif choice == "2":
+            available_models = glob("runs/detect/*/weights/best.pt")
+            print("Available models:")
+            for idx, model_path in enumerate(available_models, start=1):
+                print(f"{idx}. {model_path}")
+            choice = input(f"Enter a choice (1-{len(available_models)}) default is 3: ").strip()
+
+            if choice.isdigit() and 1 <= int(choice) <= len(available_models):
+                selected_model = available_models[int(choice) - 1]
+                print()
+
+                return selected_model
+
+def predict_source(source, conf=0.5, show=False):
     """
     Perform YOLO predictions on the specified source (image, video, or webcam).
 
@@ -11,6 +33,9 @@ def predict_source(source, model_path="models/yolo11n.pt", conf=0.5, show=True):
         conf (float): Confidence threshold for predictions.
         show (bool): Whether to display the predictions.
     """
+    print("Would you like to use a default model or a trained one?")
+    model_path = predict_model_selector()
+
     # Load the YOLO model
     model = YOLO(model_path)
 
@@ -19,16 +44,20 @@ def predict_source(source, model_path="models/yolo11n.pt", conf=0.5, show=True):
         cap = cv2.VideoCapture(0 if source == "webcam" else source)
         if not cap.isOpened():
             print("Error: Could not open webcam.")
-            return
 
+            return
         while True:
             ret, frame = cap.read()
+
             if not ret:
                 print("Error: Could not read frame from webcam.")
+    
                 break
-
             # Run inference on each frame
-            model.predict(source=frame, conf=conf, show=show)
+            result = model.predict(source=frame, conf=conf, show=show)
+
+            annotated_frame = result[0].plot()  # Ultralytics returns a list of results
+            cv2.imshow("Webcam Predictions", annotated_frame)
 
             # Press 'q' to exit
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -47,7 +76,9 @@ if __name__ == "__main__":
     print("1. Webcam")
     print("2. Image")
     print("3. Video")
-    choice = input("Enter choice (1/2/3): ").strip()
+    print("4. Training")
+    choice = input("Enter choice (1/2/3/4): ").strip()
+    print()
 
     if choice == "1":
         predict_source(source="webcam")
@@ -57,5 +88,7 @@ if __name__ == "__main__":
     elif choice == "3":
         video_path = input("Enter the path to the video: ").strip()
         predict_source(source=video_path)
+    elif choice == "4":
+        train_script()
     else:
         print("Invalid choice. Please run the script again.")
