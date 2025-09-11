@@ -2,3 +2,4 @@ data/predict/videos/*
 runs/*
 data/*
 __pycache__/
+.venv/

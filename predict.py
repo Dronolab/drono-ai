@@ -8,10 +8,10 @@ def predict_model_selector():
     while(True):
         choice = input("Enter choice 1 for default or 2 for trained: ").strip()
         if choice == "1":
-            return "models/yolov11n.pt"  # Default model
+            return "models/yolo11n.pt"  # Default model
     
         elif choice == "2":
-            available_models = glob("runs/detect/*/weights/best.pt")
+            available_models = glob("runs/detect/*/weights/*.pt")
             print("Available models:")
             for idx, model_path in enumerate(available_models, start=1):
                 print(f"{idx}. {model_path}")
