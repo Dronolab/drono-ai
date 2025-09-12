@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 import cv2
 
-def predict_source(source, model_path="models/yolo11n.pt", conf=0.5, show=True):
+def predict_source(source, model_path="models/yolo11n.pt", conf=0.5, show=False):
     """
     Perform YOLO predictions on the specified source (image, video, or webcam).
 
@@ -28,7 +28,8 @@ def predict_source(source, model_path="models/yolo11n.pt", conf=0.5, show=True):
                 break
 
             # Run inference on each frame
-            model.predict(source=frame, conf=conf, show=show)
+            annotated_frame = model.predict(source=frame, conf=conf, show=show)
+            cv2.imshow("YOLO Predictions", annotated_frame[0].plot())
 
             # Press 'q' to exit
             if cv2.waitKey(1) & 0xFF == ord('q'):
