@@ -42,6 +42,8 @@ def predict_source(source, conf=0.5, show=False):
     # Check if the source is a webcam (integer 0 or other)
     if isinstance(source, int) or source == "webcam":
         cap = cv2.VideoCapture(0 if source == "webcam" else source)
+        total_time_ms = []
+
         if not cap.isOpened():
             print("Error: Could not open webcam.")
 
@@ -55,6 +57,8 @@ def predict_source(source, conf=0.5, show=False):
                 break
             # Run inference on each frame
             result = model.predict(source=frame, conf=conf, show=show)
+            time_ms = sum(result[0].speed.values())
+            total_time_ms.append(time_ms)
 
             annotated_frame = result[0].plot()  # Ultralytics returns a list of results
             cv2.imshow("Webcam Predictions", annotated_frame)
@@ -65,6 +69,12 @@ def predict_source(source, conf=0.5, show=False):
 
         cap.release()
         cv2.destroyAllWindows()
+        
+        print()
+        print("Average time per frame: {:.2f} ms".format(sum(total_time_ms) / len(total_time_ms)))
+        print("FPS: {:.2f}".format(1000 / (sum(total_time_ms) / len(total_time_ms))))
+        print("Slowest frame time: {:.2f} ms".format(max(total_time_ms)))
+        print("Fastest frame time: {:.2f} ms".format(min(total_time_ms)))
 
     else:
         # For image or video files
