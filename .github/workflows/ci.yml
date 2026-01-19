@@ -1,0 +1,89 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with: 
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      
+    - name: Lint with Ruff
+      run: |
+        ruff --version
+        ruff check .
+    
+    - name: Basic script import / help checks
+      run: |
+        python open_cv_circle_annotation.py --help || true
+        python predict.py --help || true
+        python predict_tensor_rt.py --help || true
+        python train.py --help || true
+
+    # ----------------------------
+    # Dataset setup
+    # ----------------------------
+    - name: Unzip sample data
+      run: |
+        if [ -f data/red_circle_example.zip ]; then
+          mkdir -p data/
+          unzip -o data/red_circle_example.zip -d data/
+        fi
+
+    - name: List sample data
+      run: |
+        echo "data:"
+        ls -R data/red_circle_example || true
+
+    # ----------------------------
+    # Tiny training (CI smoke test)
+    # ----------------------------
+    - name: Train YOLO (5 epochs, CPU)
+      run: |
+        yolo train \
+          model=yolov11n.pt \
+          data=data/red_circle_example/data.yaml \
+          epochs=5 \
+          imgsz=640 \
+          batch=4 \
+          device=cpu
+
+    # ----------------------------
+    # Tiny inference
+    # ----------------------------
+    - name: Run inference on 5 images
+      run: |
+        mkdir -p data/red_circle_example/infer_subset
+        ls data/red_circle_example/test/images | head -n 5 | while read img; do
+          cp data/red_circle_example/test/images/$img data/red_circle_example/infer_subset/
+        done
+
+        yolo predict \
+          model=runs/detect/train/weights/best.pt \
+          source=data/red_circle_example/infer_subset \
+          imgsz=640 \
+          save=True
+
+    # ----------------------------
+    # Artifacts
+    # ----------------------------
+    - name: Upload artifacts (training + inference)
+      uses: actions/upload-artifact@v4
+      with:
+        name: ci-yolo-results
+        path: |
+          runs/
+          data/red_circle_example/infer_subset/
+        if-no-files-found: error

@@ -70,13 +70,6 @@ def detect_color_circles(img, color_label):
         if circularity < MIN_CIRCULARITY:
             continue
         
-       
-        # x_bb, y_bb, w_bb, h_bb = cv2.boundingRect(cnt) #bounding box 
-        # ratio = w_bb / h_bb 
-        # if ratio < 0.85 or ratio > 1.15: 
-        #     print("box trop etiree") 
-        #     continue
-        
         epsilon = 0.04 * peri 
         approx = cv2.approxPolyDP(cnt, epsilon, True) 
         if len(approx) <= 4: 

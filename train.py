@@ -29,7 +29,7 @@ def train_script():
     epochs = int(epochs) if epochs else 50
 
     try:
-        model.train(data=data_path, epochs=epochs, imgsz=640, device=device)
+        model.train(data=data_path, epochs=epochs, imgsz=640, device=device, batch=16, amp=True, workers= 4)
         print("✅ Training completed.")
         print("📦 Trained weights saved to runs/detect as the latest train")
     except Exception as e:

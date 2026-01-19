@@ -1,6 +1,5 @@
-import tensorrt as trt
-import pycuda.driver as cuda
-import pycuda.autoinit
+import tensorrt as trt # type: ignore
+import pycuda.driver as cuda # type: ignore
 import numpy as np
 import cv2
 
@@ -58,8 +57,7 @@ while True:
 
     preds = do_inference(context, bindings, inputs, outputs, stream)
 
-    # TODO: postprocess preds into boxes/classes
-    # For now, just show the original webcam feed
+    
     cv2.imshow("Webcam", frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
