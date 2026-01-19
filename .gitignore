@@ -2,5 +2,6 @@ runs/*
 !runs/README.md
 data/*
 !data/README.md
+!data/red_circle_example.zip
 __pycache__/
 .venv/
