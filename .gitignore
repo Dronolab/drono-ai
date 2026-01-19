@@ -1,4 +1,3 @@
-data/predict/videos/*
 runs/*
 data/*
 __pycache__/
