@@ -1,4 +1,6 @@
 runs/*
+!runs/README.md
 data/*
+!data/README.md
 __pycache__/
 .venv/
