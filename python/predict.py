@@ -2,7 +2,7 @@ from glob import glob
 from ultralytics import YOLO
 import cv2
 
-from train import train_script
+from python.train import train_script
 
 def predict_model_selector():
     while(True):

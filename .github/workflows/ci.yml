@@ -22,7 +22,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-        pip install -r requirements.txt
+        pip install -r .python/requirements.txt
       
     - name: Lint with Ruff
       run: |
@@ -31,10 +31,10 @@ jobs:
     
     - name: Basic script import / help checks
       run: |
-        python open_cv_circle_annotation.py --help || true
-        python predict.py --help || true
-        python predict_tensor_rt.py --help || true
-        python train.py --help || true
+        python ./python/open_cv_circle_annotation.py --help || true
+        python ./python/predict.py --help || true
+        python ./python/predict_tensor_rt.py --help || true
+        python ./python/train.py --help || true
 
     # ----------------------------
     # Dataset setup
@@ -56,7 +56,7 @@ jobs:
     # ----------------------------
     - name: Train YOLO via train.py (5 epochs, CPU)
       run: |
-        python -c "from train import train_script; train_script(model_path='models/yolo11n.pt', data_yaml='data/red_circle_example/data.yaml', epochs=5, imgsz=640, batch=2, device='cpu', workers=0, fraction=0.1, project='runs', name='ci_train', exist_ok=True, plots=False, interactive=False)"
+        python -c "from python.train import train_script; train_script(model_path='models/yolo11n.pt', data_yaml='data/red_circle_example/data.yaml', epochs=5, imgsz=640, batch=2, device='cpu', workers=0, fraction=0.1, project='runs', name='ci_train', exist_ok=True, plots=False, interactive=False)"
 
     # ----------------------------
     # Tiny inference
