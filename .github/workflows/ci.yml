@@ -71,6 +71,8 @@ jobs:
         yolo predict \
           model=runs/ci_train/weights/best.pt \
           source=data/red_circle_example/infer_subset \
+          project=runs \
+          name=ci_predict \
           imgsz=640 \
           save=True
 
@@ -85,5 +87,4 @@ jobs:
         name: ci-yolo-results
         path: |
           runs/
-          data/red_circle_example/infer_subset/
         if-no-files-found: error
