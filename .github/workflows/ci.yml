@@ -57,7 +57,7 @@ jobs:
     - name: Train YOLO (5 epochs, CPU)
       run: |
         yolo train \
-          model=yolov11n.pt \
+          model=./models/yolo11n.pt \
           data=data/red_circle_example/data.yaml \
           epochs=5 \
           imgsz=640 \
