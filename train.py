@@ -1,35 +1,45 @@
 import torch #nécessaire pour vérifier la disponibilité de CUDA
-import torchvision #nécessaire pour vérifier la disponibilité de nms  
 from ultralytics import YOLO
 import os
 import glob
-import time
 
 
-device = 0 if torch.cuda.is_available() else 'cpu'
+
 INVALID_CHOICE = "Invalid choice."
 
-def train_script():
+def train_script(
+    model_path: str,
+    data_yaml: str,
+    epochs: int,
+    imgsz: int = 640,
+    batch: int = 16,
+    device: str = 0 if torch.cuda.is_available() else 'cpu',
+    workers: int = 8,
+    fraction: float = 1.0,
+    project: str = "runs",
+    name: str = "train",
+    exist_ok: bool = False,
+    plots: bool = True,
+    interactive: bool = True,
+):
     # Check for available base models
-    selected_model = train_model_selector()
-    # Check for available datasets
-    data_path = data_selector()
+    if(interactive):
+        model_path = train_model_selector()
+        data_yaml = data_selector()
+        epochs = input("Enter number of epochs to train (default = 50): ").strip()
+        epochs = int(epochs) if epochs else 50
 
 
-    print("⚙️ Starting YOLO training with model", os.path.basename(selected_model), "and dataset", os.path.basename(data_path))
-    print(torch.__version__)
-    print(torchvision.__version__)
+    print("⚙️ Starting YOLO training with model", os.path.basename(model_path), "and dataset", os.path.basename(data_yaml))
     print("Device:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "No GPU")
 
-    time.sleep(2)  # Waits for 2 seconds to let user read the info
 
-    model = YOLO(selected_model)
+    model = YOLO(model_path)
 
-    epochs = input("Enter number of epochs to train (default = 50): ").strip()
-    epochs = int(epochs) if epochs else 50
+   
 
     try:
-        model.train(data=data_path, epochs=epochs, imgsz=640, device=device, batch=16, amp=True, workers= 4)
+        model.train(data=data_yaml, epochs=epochs, imgsz=imgsz, device=device, fraction=fraction, batch=batch, amp=True, workers= workers, project=project, name=name, exist_ok=exist_ok, plots=plots)
         print("✅ Training completed.")
         print("📦 Trained weights saved to runs/detect as the latest train")
     except Exception as e:
@@ -45,11 +55,11 @@ def train_model_selector():
     while(True):
         choice = input(f"Enter a choice (1-{len(available_models)}): ").strip()
         if choice.isdigit() and 1 <= int(choice) <= len(available_models):
-            selected_model = available_models[int(choice) - 1]
-            print(f"You selected: {selected_model}")
+            model_path = available_models[int(choice) - 1]
+            print(f"You selected: {model_path}")
             print()
 
-            return selected_model
+            return model_path
         else:
             print(INVALID_CHOICE)
 

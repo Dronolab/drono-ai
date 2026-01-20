@@ -54,16 +54,9 @@ jobs:
     # ----------------------------
     # Tiny training (CI smoke test)
     # ----------------------------
-    - name: Train YOLO (5 epochs, CPU)
+    - name: Train YOLO via train.py (5 epochs, CPU)
       run: |
-        yolo train \
-          model=./models/yolo11n.pt \
-          data=data/red_circle_example/data.yaml \
-          epochs=5 \
-          imgsz=640 \
-          batch=2 \
-          device=cpu \
-          fraction=0.1
+        python -c "from train import train_script; train_script(model_path='models/yolo11n.pt', data_yaml='data/red_circle_example/data.yaml', epochs=5, imgsz=640, batch=2, device='cpu', workers=0, fraction=0.1, project='runs', name='ci_train', exist_ok=True, plots=False, interactive=False)"
 
     # ----------------------------
     # Tiny inference
