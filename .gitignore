@@ -4,4 +4,6 @@ data/*
 !data/README.md
 !data/red_circle_example.zip
 __pycache__/
+.vscode/
+C++/build/
 .venv/
