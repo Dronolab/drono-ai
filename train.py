@@ -41,7 +41,7 @@ def train_script(
     try:
         model.train(data=data_yaml, epochs=epochs, imgsz=imgsz, device=device, fraction=fraction, batch=batch, amp=True, workers= workers, project=project, name=name, exist_ok=exist_ok, plots=plots)
         print("✅ Training completed.")
-        print("📦 Trained weights saved to runs/detect as the latest train")
+        print(f"📦 Trained weights saved to {project}/{name}/weights")
     except Exception as e:
         print(f"❌ Error during training: {e}")
 

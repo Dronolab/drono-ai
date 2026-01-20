@@ -56,7 +56,7 @@ jobs:
     # ----------------------------
     - name: Train YOLO via train.py (5 epochs, CPU)
       run: |
-        python -c "from train import train_script; train_script(model_path='models/yolo11n.pt', data_yaml='data/red_circle_example/data.yaml', epochs=5, imgsz=640, batch=2, device='cpu', workers=0, fraction=0.1, project='runs', name='ci_train', exist_ok=True, plots=False, interactive=False)"
+        python -c "from train import train_script; train_script(model_path='models/yolo11n.pt', data_yaml='data/red_circle_example/data.yaml', epochs=1, imgsz=640, batch=2, device='cpu', workers=0, fraction=0.001, project='runs', name='ci_train', exist_ok=True, plots=False, interactive=False)"
 
     # ----------------------------
     # Tiny inference
@@ -69,10 +69,12 @@ jobs:
         done
 
         yolo predict \
-          model=runs/detect/train/weights/best.pt \
+          model=runs/ci_train/weights/best.pt \
           source=data/red_circle_example/infer_subset \
           imgsz=640 \
           save=True
+
+
 
     # ----------------------------
     # Artifacts
