@@ -42,14 +42,27 @@ jobs:
     - name: Unzip sample data
       run: |
         if [ -f data/red_circle_example.zip ]; then
-          mkdir -p data/
-          unzip -o data/red_circle_example.zip -d data/
+          mkdir -p data/red_circle_example
+          unzip -o data/red_circle_example.zip -d data/red_circle_example
         fi
 
     - name: List sample data
       run: |
         echo "data:"
         ls -R data/red_circle_example || true
+
+
+
+    # ----------------------------
+    # debugging
+    # ----------------------------
+    - name: Debug info
+      run: |
+        echo "Tree:"
+        find data/red_circle_example -maxdepth 3 -print 
+        echo "data.yaml"
+        find data/red_circle_example -name data.yaml -print
+    
 
     # ----------------------------
     # Tiny training (CI smoke test)
