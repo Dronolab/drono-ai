@@ -1,3 +1,3 @@
 # yolo_detector
 
-script from which the ONNX model is loaded and where we select the runtime environement
+script from which the python script who does the detection is loaded and returns the unit vector of the detected targets 
