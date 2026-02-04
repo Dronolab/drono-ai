@@ -2,7 +2,7 @@ from glob import glob
 from ultralytics import YOLO
 import cv2
 
-from python.train import train_script
+from train import train_script
 
 def predict_model_selector():
     while(True):
@@ -11,7 +11,7 @@ def predict_model_selector():
             return "models/yolo11n.pt"  # Default model
     
         elif choice == "2":
-            available_models = glob("runs/detect/*/weights/*.pt")
+            available_models = glob("../runs/detect/*/weights/*.pt")
             print("Available models:")
             for idx, model_path in enumerate(available_models, start=1):
                 print(f"{idx}. {model_path}")
@@ -87,7 +87,7 @@ if __name__ == "__main__":
     print("2. Image")
     print("3. Video")
     print("4. Training")
-    choice = input("Enter choice (1/2/3/4): ").strip()
+    choice = input("Enter choice (1/2/3/4/5): ").strip()
     print()
 
     if choice == "1":
@@ -100,5 +100,8 @@ if __name__ == "__main__":
         predict_source(source=video_path)
     elif choice == "4":
         train_script()
+    elif choice == "5":
+        model = YOLO("models/yolo11n.pt")
+        model.export(format="onnx")
     else:
         print("Invalid choice. Please run the script again.")
