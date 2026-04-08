@@ -1,4 +1,3 @@
-from PIL import Image
 import cv2 as cv
 import numpy as np
 
@@ -14,8 +13,6 @@ def detect_ellipses(image_path: str):
 
     # Find contours
     contours, _ = cv.findContours(edges, cv.RETR_LIST, cv.CHAIN_APPROX_NONE)
-
-    mask = np.zeros_like(gray)
 
     ellipses = []
     for cnt in contours:
