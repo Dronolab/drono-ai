@@ -1,11 +1,12 @@
 import argparse
 import pathlib
 from ellipse_detection import detect_ellipses
+from color_detection import get_color_label_hsv
 import cv2 as cv
 import os
 from tqdm import tqdm
 
-def save_yolo_annotation(image_path, ellipses, output_folder):
+def save_yolo_annotation(image_path, ellipses, output_folder, class_index):    
     img = cv.imread(image_path)
     h_img, w_img = img.shape[:2]
 
@@ -22,7 +23,7 @@ def save_yolo_annotation(image_path, ellipses, output_folder):
             w_norm = w / w_img
             h_norm = h / h_img
 
-            class_id = 0  # We do not care about class_id
+            class_id = class_index
 
             f.write(f"{class_id} {x_norm} {y_norm} {w_norm} {h_norm}\n")
 
@@ -38,7 +39,17 @@ in_path = pathlib.Path(args.input)
 
 assert out_path.exists(), f"Output path is not valid: {out_path}"
 assert in_path.exists(), f"Input path is not valid: {in_path}"
+
+classes = ["black_target", "white_target", "red_target", "yellow_target", "green_target", "blue_target"]
+
 for file in tqdm(in_path.glob("*.jpg")):
     ellipses = detect_ellipses(file)
     if len(ellipses) > 0:
-        save_yolo_annotation(file, ellipses, out_path)
+        class_index = 6
+        for ellipse in ellipses:
+            (x, y), (w, h), _ = ellipse
+            class_index = classes.index(get_color_label_hsv(file, x, y))
+        save_yolo_annotation(image_path=file, 
+                             ellipses=ellipses,
+                             class_index=class_index, 
+                             output_folder=out_path)

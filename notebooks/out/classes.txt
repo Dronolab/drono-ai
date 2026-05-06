@@ -1,0 +1,7 @@
+black_target
+white_target
+red_target
+yellow_target
+green_target
+blue_target
+unknown
