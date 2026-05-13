@@ -4,7 +4,8 @@ from pathlib import Path
 import numpy as np
     
 def get_color_label_hsv(img, x, y):
-    hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
+    image = Image.open(img)
+    hsv = cv.cvtColor(np.array(image), cv.COLOR_RGB2HSV)
 
     x, y = int(x), int(y)
     patch = hsv[max(0,y-2):y+3, max(0,x-2):x+3]
@@ -13,21 +14,12 @@ def get_color_label_hsv(img, x, y):
     s = np.mean(patch[:,:,1])
     v = np.mean(patch[:,:,2])
 
-
-    # ⚫ noir
-    if v < 50:
-        return "black_target"
-
-    # ⚪ blanc
-    if v > 200 and s < 40:
-        return "white_target"
-
     # 🔴 rouge (wrap autour de 0)
     if (h < 10 or h > 170) and s > 100:
         return "red_target"
 
     # 🟡 jaune
-    if 20 < h < 35 and s > 100:
+    if 60 < h < 110:
         return "yellow_target"
 
     # 🟢 vert
@@ -38,4 +30,12 @@ def get_color_label_hsv(img, x, y):
     if 90 < h < 130 and s > 100:
         return "blue_target"
 
+    # ⚫ noir
+    if v < 50:
+        return "black_target"
+
+    # ⚪ blanc
+    if v > 200 and s < 40:
+        return "white_target"
+    
     return "unknown"

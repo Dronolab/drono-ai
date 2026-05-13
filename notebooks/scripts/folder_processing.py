@@ -40,7 +40,7 @@ in_path = pathlib.Path(args.input)
 assert out_path.exists(), f"Output path is not valid: {out_path}"
 assert in_path.exists(), f"Input path is not valid: {in_path}"
 
-classes = ["black_target", "white_target", "red_target", "yellow_target", "green_target", "blue_target"]
+classes = ["black_target", "white_target", "red_target", "yellow_target", "green_target", "blue_target", "unknown"]
 
 for file in tqdm(in_path.glob("*.jpg")):
     ellipses = detect_ellipses(file)
