@@ -101,5 +101,3 @@ def test_model(
     print(f"Test Loss: {test_loss:.4f}")
 
     return test_loss
-
-
