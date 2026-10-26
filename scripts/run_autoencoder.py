@@ -8,17 +8,17 @@ from models.autoencoder import AutoEncoder
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("image_path", type=str, help="The path to the input image")
+parser.add_argument("image_path", type=str, help=f"The path to the input image")
 parser.add_argument("pt_file", type=str, help="The path to the autoencoder .pt file")
 parser.add_argument("size", type=int, help="The size of the image that the model tales in")
 
 args = parser.parse_args()
 
 img_path = Path(args.image_path)
-assert img_path.is_file(), "image_path has to be a path to a file"
+assert img_path.is_file(), f"image_path has to be a path to a file.\n{img_path}"
 
 pt_path = Path(args.pt_file)
-assert pt_path.is_file(), "pt_file has to be a path to a file"
+assert pt_path.is_file(), f"pt_file has to be a path to a file.\n{pt_path}"
 
 img_size = args.size
 
