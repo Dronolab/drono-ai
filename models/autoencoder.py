@@ -3,63 +3,70 @@ import torch.nn as nn
 
 
 class AutoEncoder(nn.Module):
-    def __init__(self, in_channels=3):
+    def __init__(self, in_channels=3, in_size=128):
         super().__init__()
 
-        # 128x128
-        self.encoder = nn.Sequential(
-            nn.Conv2d(in_channels, 256, kernel_size=3, stride=2, padding=1),
-            nn.ReLU(),
+        if in_size < 4 or (in_size & (in_size - 1)) != 0:
+            raise ValueError(
+                "in_size must be a power of 2 and >= 4"
+            )
 
-            # 64x64
-            nn.Conv2d(256, 128, kernel_size=3, stride=2, padding=1),
-            nn.ReLU(),
+        num_layers = int(torch.log2(torch.tensor(in_size))) - 2
 
-            # 32x32
-            nn.Conv2d(128, 64, kernel_size=3, stride=2, padding=1),
-            nn.ReLU(),
+        channels = [
+            min(256, 16 * 2 ** i)
+            for i in range(num_layers)
+        ]
 
-            # 16x16
-            nn.Conv2d(64, 32, kernel_size=3, stride=2, padding=1),
-            nn.ReLU(),
+        # Encoder
+        encoder_layers = []
+        current_channels = in_channels
 
-            # 8x8
-            nn.Conv2d(32, 16, kernel_size=3, stride=2, padding=1),
-            nn.ReLU(),
-        )
+        for out_channels in channels:
+            encoder_layers.append(
+                nn.Conv2d(
+                    current_channels,
+                    out_channels,
+                    kernel_size=3,
+                    stride=2,
+                    padding=1,
+                )
+            )
+            encoder_layers.append(nn.ReLU())
 
-        self.decoder = nn.Sequential(
-            # 8x8 -> 16x16
-            nn.ConvTranspose2d(
-                16, 32, kernel_size=3, stride=2, padding=1, output_padding=1
-            ),
-            nn.ReLU(),
+            current_channels = out_channels
 
-            # 16x16 -> 32x32
-            nn.ConvTranspose2d(
-                32, 64, kernel_size=3, stride=2, padding=1, output_padding=1
-            ),
-            nn.ReLU(),
+        self.encoder = nn.Sequential(*encoder_layers)
 
-            # 32x32 -> 64x64
-            nn.ConvTranspose2d(
-                64, 128, kernel_size=3, stride=2, padding=1, output_padding=1
-            ),
-            nn.ReLU(),
+        # Decoder
+        decoder_layers = []
 
-            # 64x64 -> 128x128
-            nn.ConvTranspose2d(
-                128, 256, kernel_size=3, stride=2, padding=1, output_padding=1
-            ),
-            nn.ReLU(),
+        for i in range(len(channels) - 1, -1, -1):
 
-            # 128x128 -> 128x128
-            nn.Conv2d(256, in_channels, kernel_size=3, padding=1),
-            nn.Sigmoid(),
-        )
+            if i == 0:
+                out_channels = in_channels
+            else:
+                out_channels = channels[i - 1]
+
+            decoder_layers.append(
+                nn.ConvTranspose2d(
+                    current_channels,
+                    out_channels,
+                    kernel_size=3,
+                    stride=2,
+                    padding=1,
+                    output_padding=1,
+                )
+            )
+
+            if i == 0:
+                decoder_layers.append(nn.Sigmoid())
+            else:
+                decoder_layers.append(nn.ReLU())
+
+            current_channels = out_channels
+
+        self.decoder = nn.Sequential(*decoder_layers)
 
     def forward(self, x):
-        encoded = self.encoder(x)
-        decoded = self.decoder(encoded)
-
-        return decoded
+        return self.decoder(self.encoder(x))

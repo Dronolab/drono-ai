@@ -2,6 +2,7 @@ import argparse
 from pathlib import Path
 from ultralytics import YOLO
 from PIL import Image
+import torch
 import torchvision.transforms.functional as F
 from torchvision import transforms
 
@@ -22,6 +23,8 @@ assert image_path.is_file(), "in_image has to be a path to a file"
 out_path = Path(args.out_path)
 assert out_path.is_dir(), "out_path has to be a path to a folder"
 
+device = "gpu" if torch.cuda.is_available() else "cpu"
+
 yolo = None
 if(args.yolo_params):
     yolo_path = Path(args.yolo_params)
@@ -36,8 +39,8 @@ auto_encoder = None
 if(args.autoencoder_params):
     ae_path = Path(args.autoencoder_params)
     assert ae_path.is_file(), "autoencoder_path has to be a path to a file"
-    auto_encoder = AutoEncoder(1, 1)  # to tweak
-    auto_encoder.load_state_dict(ae_path)
+    auto_encoder = AutoEncoder()
+    auto_encoder.load_state_dict(torch.load(ae_path, map_location=device, weights_only=True))
 else:
     print(f"No autoencoder_params provided, no anomaly detection will be done")
 
@@ -55,13 +58,13 @@ for detection in detections:
 
 # anomaly detection
 if auto_encoder:
-    transform = transforms.Compose(
-        transforms.Resize((256, 256)),
+    transform = transforms.Compose([
+        transforms.Resize((128, 128)),
         transforms.ToTensor()
-    )
+    ])
     anomalies = []
     for img in cropped_images:
-        tensor_img = transforms(img)
+        tensor_img = transform(img)
         anomaly = auto_encoder(tensor_img)
         transforms.ToPILImage()(anomaly).show()
         anomalies.append(anomaly)
