@@ -1,32 +1,65 @@
+import torch
 import torch.nn as nn
-import torchvision.transforms as transforms;
+
+
 class AutoEncoder(nn.Module):
-    def __init__(self, in_size: int, out_size: int):
+    def __init__(self, in_channels=3):
+        super().__init__()
+
+        # 128x128
         self.encoder = nn.Sequential(
-            nn.Conv2d(in_size, 256, kernel_size=3, stride=2, padding=1),
+            nn.Conv2d(in_channels, 256, kernel_size=3, stride=2, padding=1),
             nn.ReLU(),
+
+            # 64x64
             nn.Conv2d(256, 128, kernel_size=3, stride=2, padding=1),
             nn.ReLU(),
+
+            # 32x32
             nn.Conv2d(128, 64, kernel_size=3, stride=2, padding=1),
             nn.ReLU(),
+
+            # 16x16
             nn.Conv2d(64, 32, kernel_size=3, stride=2, padding=1),
             nn.ReLU(),
+
+            # 8x8
             nn.Conv2d(32, 16, kernel_size=3, stride=2, padding=1),
-            nn.ReLU()
+            nn.ReLU(),
         )
 
         self.decoder = nn.Sequential(
-            nn.Linear(16, 32),
+            # 8x8 -> 16x16
+            nn.ConvTranspose2d(
+                16, 32, kernel_size=3, stride=2, padding=1, output_padding=1
+            ),
             nn.ReLU(),
-            nn.Linear(32, 64),
+
+            # 16x16 -> 32x32
+            nn.ConvTranspose2d(
+                32, 64, kernel_size=3, stride=2, padding=1, output_padding=1
+            ),
             nn.ReLU(),
-            nn.Linear(64, 128),
+
+            # 32x32 -> 64x64
+            nn.ConvTranspose2d(
+                64, 128, kernel_size=3, stride=2, padding=1, output_padding=1
+            ),
             nn.ReLU(),
-            nn.Linear(128, 256),
+
+            # 64x64 -> 128x128
+            nn.ConvTranspose2d(
+                128, 256, kernel_size=3, stride=2, padding=1, output_padding=1
+            ),
             nn.ReLU(),
-            nn.Linear(256, ...),
-            nn.Sigmoid()
+
+            # 128x128 -> 128x128
+            nn.Conv2d(256, in_channels, kernel_size=3, padding=1),
+            nn.Sigmoid(),
         )
 
     def forward(self, x):
-        return self.decoder(self.encoder(x))
+        encoded = self.encoder(x)
+        decoded = self.decoder(encoded)
+
+        return decoded

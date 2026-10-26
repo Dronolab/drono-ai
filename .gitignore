@@ -230,10 +230,7 @@ __pycache__/
 .vscode/
 C++/build/
 .venv/
-<<<<<<< Updated upstream
+*.pt
 notebooks/data/in/*
-=======
-.conda/
 notebooks/Deer-6
 .DS_Store
->>>>>>> Stashed changes

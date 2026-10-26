@@ -8,3 +8,4 @@ supervision==0.28.0
 torch==2.2.2
 torchvision==0.17.2
 tqdm==4.67.1
+ultralytics==8.4.189
